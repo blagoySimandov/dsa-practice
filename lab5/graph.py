@@ -55,6 +55,9 @@ class Graph:
                 edges.append(edge)
         return edges
 
+    def __iter__(self):
+        return iter(self.graph)
+
     def num_vertices(self) -> int:
         return len(self.graph)
 
@@ -81,17 +84,30 @@ class Graph:
         self.graph[v][u] = e
         return e
 
-    def breadthfirstsearch(self, v: Vertex) -> dict[Vertex, Edge | None]:
-        marked: dict[Vertex, Edge | None] = {v: None}
+    BreathFirstSearchResult = tuple[dict[Vertex, tuple[Edge, int] | None], int]
+
+    def breadthfirstsearch(self, v: Vertex) -> BreathFirstSearchResult:
+        marked: dict[Vertex, tuple[Edge, int] | None] = {v: None}
         queue = [v]  # TODO: fix this to use a proper q
-        while len(queue) > 0:
-            current = queue.pop(0)
-            for e in self.get_edges(current):
-                w = e.opposite(current)
-                if w not in marked:
-                    marked[w] = e
-                    queue.append(w)
-        return marked
+        level = 0
+        max_level = 0
+
+        while queue:
+            level_size = len(queue)  # Process all nodes at current level
+            level += 1
+
+            for _ in range(level_size):
+                current = queue.pop(0)
+                for e in self.get_edges(current):
+                    w = e.opposite(current)
+                    if w not in marked:
+                        marked[w] = (e, level)
+                        max_level = (
+                            level  # Update max level when we find a node at a new level
+                        )
+                        queue.append(w)
+
+        return (marked, max_level)
 
     def depthfirstsearch(self, v: Vertex) -> dict[Vertex, Edge | None]:
         marked: dict[Vertex, Edge | None] = {v: None}
