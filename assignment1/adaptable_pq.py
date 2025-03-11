@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import Any, Iterator
 
 
+# https://docs.python.org/3/library/heapq.html
 @dataclass(order=True)
 class PrioritizedItem:
     priority: int
