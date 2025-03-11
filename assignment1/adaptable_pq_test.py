@@ -7,6 +7,7 @@ def test_adaptable_pq():
     entry1 = pq.add_task("Task 1", 5)
     entry2 = pq.add_task("Task 2", 3)
     entry3 = pq.add_task("Task 3", 7)
+
     entry4 = pq.add_task("Task 4", 1)
 
     print(f"Queue size: {len(pq)}")
@@ -31,4 +32,3 @@ def test_adaptable_pq():
 
 if __name__ == "__main__":
     test_adaptable_pq()
-
