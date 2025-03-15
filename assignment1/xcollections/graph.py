@@ -1,6 +1,7 @@
 import uuid
 from typing import Any
-from adaptable_pq import AdaptablePQ
+from xcollections.adaptable_pq import AdaptablePQ
+import random
 
 
 class Vertex:
@@ -205,3 +206,37 @@ class Graph:
             edges.append(self.get_edge(path[i], path[i + 1]))
 
         return edges, distance
+
+    def generate_random_graph(self, n: int, m: int) -> list[list[Vertex | None]]:
+        # Fix: Properly initialize a 2D matrix
+        node_matrix: list[list[Vertex | None]] = [
+            [None for _ in range(m)] for _ in range(n)
+        ]
+
+        for i in range(n):
+            for j in range(m):
+                v = Vertex(f"v{i}_{j}")
+                node_matrix[i][j] = v
+                self.graph[v] = {}
+
+        for i in range(n):
+            for j in range(m):
+                if i + 1 < n:
+                    v1 = node_matrix[i][j]
+                    v2 = node_matrix[i + 1][j]
+                    if v1 is not None and v2 is not None:
+                        self.add_edge(
+                            v1,
+                            v2,
+                            random.randint(1, max(n, m) // 2),
+                        )
+                if j + 1 < m:
+                    v1 = node_matrix[i][j]
+                    v2 = node_matrix[i][j + 1]
+                    if v1 is not None and v2 is not None:
+                        self.add_edge(
+                            v1,
+                            v2,
+                            random.randint(1, max(n, m) // 2),
+                        )
+        return node_matrix
