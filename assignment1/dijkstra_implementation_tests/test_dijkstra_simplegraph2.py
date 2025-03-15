@@ -1,4 +1,4 @@
-from collections.graph import Graph
+from xcollections.graph import Graph
 
 
 def test_dijkstra_large():
@@ -54,4 +54,3 @@ def test_dijkstra_large():
 
 if __name__ == "__main__":
     test_dijkstra_large()
-

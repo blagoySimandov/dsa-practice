@@ -1,4 +1,4 @@
-from collections.graph import Graph
+from xcollections.graph import Graph
 
 
 def test_dijkstra_custom():
@@ -43,4 +43,3 @@ def test_dijkstra_custom():
 
 if __name__ == "__main__":
     test_dijkstra_custom()
-
