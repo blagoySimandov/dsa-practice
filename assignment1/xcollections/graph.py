@@ -1,4 +1,5 @@
 import uuid
+from typing import cast
 from typing import Any
 from xcollections.adaptable_pq import AdaptablePQ
 import random
@@ -207,18 +208,21 @@ class Graph:
 
         return edges, distance
 
-    def generate_random_graph(self, n: int, m: int) -> list[list[Vertex | None]]:
+    def generate_random_graph(self, n: int, m: int) -> list[list[Vertex]]:
         # Fix: Properly initialize a 2D matrix
         node_matrix: list[list[Vertex | None]] = [
             [None for _ in range(m)] for _ in range(n)
         ]
 
+        # create vertices
         for i in range(n):
             for j in range(m):
                 v = Vertex(f"v{i}_{j}")
                 node_matrix[i][j] = v
+                # Add vertex by insantance. Might move it to a method ?
                 self.graph[v] = {}
 
+        # create the edges
         for i in range(n):
             for j in range(m):
                 if i + 1 < n:
@@ -239,4 +243,6 @@ class Graph:
                             v2,
                             random.randint(1, max(n, m) // 2),
                         )
-        return node_matrix
+        # done for the sake of the lsp
+        node_matrix_casted = cast(list[list[Vertex]], node_matrix)
+        return node_matrix_casted

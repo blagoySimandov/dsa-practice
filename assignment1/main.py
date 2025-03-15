@@ -1,6 +1,5 @@
 from xcollections.graph import Graph
-import pprint
 
 g = Graph()
 m = g.generate_random_graph(4, 4)
-pprint.pprint(str(g))
+g.dijkstra(m[0][0], m[3][3], True)
