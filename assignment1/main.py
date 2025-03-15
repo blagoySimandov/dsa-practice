@@ -1,3 +1,3 @@
-from graph import Graph
+from collections.graph import Graph
 
 g = Graph()
