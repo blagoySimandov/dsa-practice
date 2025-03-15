@@ -1,5 +1,6 @@
 import uuid
 from typing import Any
+from adaptable_pq import AdaptablePQ
 
 
 class Vertex:
@@ -132,3 +133,75 @@ class Graph:
                 connections.append(f"{neighbor} (via {edge.element()})")
             result += ", ".join(connections) + "\n"
         return result
+
+    def dijkstra(
+        self, src: Vertex, dest: Vertex, print_result=False
+    ) -> tuple[list[Vertex], float]:
+        dist = {v: float("inf") for v in self.graph}
+        dist[src] = 0
+
+        prev = {v: None for v in self.graph}
+
+        pq = AdaptablePQ()
+        vertex_entries = {}
+
+        for v in self.graph:
+            priority = 0 if v == src else float("inf")
+            vertex_entries[v] = pq.add(v, priority)
+
+        while len(pq) > 0:
+            u, u_dist = pq.pop()
+
+            if u == dest:
+                break
+
+            for e in self.get_edges(u):
+                v = e.opposite(u)
+                weight = e.element()
+                alt_dist = u_dist + weight
+
+                if alt_dist < dist[v]:
+                    dist[v] = alt_dist
+                    prev[v] = u
+                    pq.update_priority(v, alt_dist)
+
+        path = []
+        current = dest
+
+        if prev[dest] is None and dest != src:
+            return [], float("inf")
+
+        while current is not None:
+            path.append(current)
+            current = prev[current]
+
+        path.reverse()
+
+        if print_result:  # TODO: Maybe move this out ?
+            print("\n=== DIJKSTRA RESULT ===")
+            print(
+                f"Shortest path from {src.element()} to {dest.element()}: {' -> '.join([v.element() for v in path])}"
+            )
+            print(f"Total distance: {dist[dest]}")
+
+            print("\nDetailed path:")
+            for i in range(len(path) - 1):
+                edge = self.get_edge(path[i], path[i + 1])
+                print(
+                    f"{path[i].element()} to {path[i + 1].element()} (weight: {edge.element()})"
+                )
+            print("=== END RESULT ===\n")
+
+        return path, dist[dest]
+
+    def shortest_path(self, src: Vertex, dest: Vertex, debug=False):
+        path, distance = self.dijkstra(src, dest, debug)
+
+        if path is None:
+            return None
+
+        edges = []
+        for i in range(len(path) - 1):
+            edges.append(self.get_edge(path[i], path[i + 1]))
+
+        return edges, distance

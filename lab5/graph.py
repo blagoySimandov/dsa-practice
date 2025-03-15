@@ -24,7 +24,9 @@ class Edge:
         self.id = id
         self.u = u
         self.v = v
-        self.label = label
+        self.label = label  # acts as weight in our case.
+        # TODO: add weight to the edge and leavel label as a label ?
+        # Very much up to change...
 
     def element(self):
         return self.label
@@ -132,3 +134,24 @@ class Graph:
                 connections.append(f"{neighbor} (via {edge.element()})")
             result += ", ".join(connections) + "\n"
         return result
+
+    def dijkstra(self, src: Vertex, dest: Vertex):
+        sptSet = set()
+        vertices_count = len(self.graph.keys())
+        apq = AdaptablePQ()
+        for v in self.graph:
+            if v != src:
+                v_dist = (v, float("inf"))
+                distance_map[v] = v_dist
+            else:
+                v_dist = (v, 0)
+                distance_map[v] = v_dist
+
+        while len(sptSet)!=vertices_count:
+
+
+
+            
+
+
+        pass

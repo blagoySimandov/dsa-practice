@@ -10,7 +10,7 @@ from typing import Any, Iterator
 # https://docs.python.org/3/library/heapq.html
 @dataclass(order=True)
 class PrioritizedItem:
-    priority: int
+    priority: int | float
     count: int = field(compare=True)
     item: Any = field(compare=False)
     REMOVED: bool = field(default=False, compare=False)
@@ -32,9 +32,9 @@ class AdaptablePQ:
     def __iter__(self) -> Iterator[PrioritizedItem]:
         return (entry for entry in self.heap if not entry.REMOVED)
 
-    def add_task(self, task: Any, priority: int = 0) -> PrioritizedItem:
+    def add(self, task: Any, priority: int | float = 0) -> PrioritizedItem:
         if task in self.entry_finder:
-            self.remove_task(task)
+            self.remove(task)
 
         count = next(self.counter)
         entry = PrioritizedItem(priority=priority, count=count, item=task)
@@ -42,11 +42,11 @@ class AdaptablePQ:
         heapq.heappush(self.heap, entry)
         return entry
 
-    def remove_task(self, task: Any) -> None:
+    def remove(self, task: Any) -> None:
         entry = self.entry_finder.pop(task)
         entry.REMOVED = True
 
-    def pop_task(self) -> tuple[Any, int]:
+    def pop(self) -> tuple[Any, int | float]:
         while self.heap:
             entry = heapq.heappop(self.heap)
             if not entry.REMOVED:
@@ -54,7 +54,7 @@ class AdaptablePQ:
                 return entry.item, entry.priority
         raise IndexError("pop from an empty priority queue")
 
-    def peek(self) -> tuple[Any, int]:
+    def peek(self) -> tuple[Any, int | float]:
         while self.heap:
             entry = self.heap[0]
             if entry.REMOVED:
@@ -66,6 +66,5 @@ class AdaptablePQ:
     def update_priority(self, task: Any, new_priority: int) -> PrioritizedItem:
         if task not in self.entry_finder:
             raise KeyError(f"Task {task} not found")
-        self.remove_task(task)
-        return self.add_task(task, new_priority)
-
+        self.remove(task)
+        return self.add(task, new_priority)
