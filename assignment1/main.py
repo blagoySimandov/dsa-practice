@@ -79,10 +79,10 @@ def benchmark_dijkstra_q4():
         destination = m[dest_row][dest_col]
 
         def early_stop_wrapper():
-            return g.dijkstra(source, destination, False)
+            return g.dijkstra(source, destination, False, early_stop=True)
 
         def all_nodes_wrapper():
-            return g.dijkstra_all_nodes(source, destination, False)
+            return g.dijkstra(source, destination, False, early_stop=False)
 
         iterations = 10
 
