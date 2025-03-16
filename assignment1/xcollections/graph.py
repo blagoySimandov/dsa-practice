@@ -1,7 +1,7 @@
 import uuid
 from typing import cast
 from typing import Any
-from xcollections.adaptable_pq import AdaptablePQ
+from xcollections.adaptable_pq import AdaptablePQ, AdaptablePQUnsortedList
 import random
 
 
@@ -136,25 +136,32 @@ class Graph:
             result += ", ".join(connections) + "\n"
         return result
 
-    def dijkstra(
-        self, src: Vertex, dest: Vertex, print_result=False
-    ) -> tuple[list[Vertex], float]:
+    def dijkstra_list_apq(self, src: Vertex, dest: Vertex, print_result=False):
         dist = {v: float("inf") for v in self.graph}
         dist[src] = 0
+        prev = {v: None for v in self.graph}  # used to reconstruct the path
 
-        prev = {v: None for v in self.graph}
+        pq = AdaptablePQUnsortedList()
 
+        pass
+
+    def dijkstra(
+        self, src: Vertex, dest: Vertex, print_result=False, early_stop=True
+    ) -> tuple[list[Vertex], float]:
+        dist = {}
+        prev = {}
         pq = AdaptablePQ()
-        vertex_entries = {}
 
         for v in self.graph:
             priority = 0 if v == src else float("inf")
-            vertex_entries[v] = pq.add(v, priority)
+            dist[v] = priority
+            prev[v] = None
+            pq.add(v, priority)
 
         while len(pq) > 0:
             u, u_dist = pq.pop()
 
-            if u == dest:
+            if early_stop and u == dest:
                 break
 
             for e in self.get_edges(u):
@@ -195,78 +202,8 @@ class Graph:
             print("=== END RESULT ===\n")
 
         return path, dist[dest]
-        
-    def dijkstra_all_nodes(
-        self, src: Vertex, dest: Vertex, print_result=False
-    ) -> tuple[list[Vertex], float]:
-        dist = {v: float("inf") for v in self.graph}
-        dist[src] = 0
-
-        prev = {v: None for v in self.graph}
-
-        pq = AdaptablePQ()
-        vertex_entries = {}
-
-        for v in self.graph:
-            priority = 0 if v == src else float("inf")
-            vertex_entries[v] = pq.add(v, priority)
-
-        while len(pq) > 0:
-            u, u_dist = pq.pop()
-
-            for e in self.get_edges(u):
-                v = e.opposite(u)
-                weight = e.element()
-                alt_dist = u_dist + weight
-
-                if alt_dist < dist[v]:
-                    dist[v] = alt_dist
-                    prev[v] = u
-                    pq.update_priority(v, alt_dist)
-
-        path = []
-        current = dest
-
-        if prev[dest] is None and dest != src:
-            return [], float("inf")
-
-        while current is not None:
-            path.append(current)
-            current = prev[current]
-
-        path.reverse()
-
-        if print_result:
-            print("\n=== DIJKSTRA ALL NODES RESULT ===")
-            print(
-                f"Shortest path from {src.element()} to {dest.element()}: {' -> '.join([v.element() for v in path])}"
-            )
-            print(f"Total distance: {dist[dest]}")
-
-            print("\nDetailed path:")
-            for i in range(len(path) - 1):
-                edge = self.get_edge(path[i], path[i + 1])
-                print(
-                    f"{path[i].element()} to {path[i + 1].element()} (weight: {edge.element()})"
-                )
-            print("=== END RESULT ===\n")
-
-        return path, dist[dest]
-
-    def shortest_path(self, src: Vertex, dest: Vertex, debug=False):
-        path, distance = self.dijkstra(src, dest, debug)
-
-        if path is None:
-            return None
-
-        edges = []
-        for i in range(len(path) - 1):
-            edges.append(self.get_edge(path[i], path[i + 1]))
-
-        return edges, distance
 
     def generate_random_graph(self, n: int, m: int) -> list[list[Vertex]]:
-        # Fix: Properly initialize a 2D matrix
         node_matrix: list[list[Vertex | None]] = [
             [None for _ in range(m)] for _ in range(n)
         ]
