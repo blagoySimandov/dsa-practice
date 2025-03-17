@@ -139,3 +139,36 @@ class AdaptablePQUnsortedList:
             raise KeyError(f"task {task} not found")
         self.remove(task)
         return self.add(task, new_priority)
+
+
+class SimplePQ:
+    def __init__(self):
+        self.heap: list[PrioritizedItem] = []
+        self.counter = itertools.count()
+
+    def __len__(self) -> int:
+        return len(self.heap)
+
+    def __str__(self) -> str:
+        return str(self.heap)
+
+    def __iter__(self) -> Iterator[PrioritizedItem]:
+        return iter(self.heap)
+
+    def add(self, task: Any, priority: int | float = 0) -> PrioritizedItem:
+        count = next(self.counter)
+        entry = PrioritizedItem(priority=priority, count=count, item=task)
+        heapq.heappush(self.heap, entry)
+        return entry
+
+    def pop(self) -> tuple[Any, int | float]:
+        if not self.heap:
+            raise IndexError("pop from an empty priority queue")
+        entry = heapq.heappop(self.heap)
+        return entry.item, entry.priority
+
+    def peek(self) -> tuple[Any, int | float]:
+        if not self.heap:
+            raise IndexError("peek from an empty priority queue")
+        entry = self.heap[0]
+        return entry.item, entry.priority
