@@ -1,7 +1,7 @@
 import uuid
 from typing import cast
 from typing import Any
-from xcollections.adaptable_pq import AdaptablePQ, AdaptablePQUnsortedList
+from xcollections.pq import AdaptablePQ, AdaptablePQUnsortedList, SimplePQ
 import random
 
 
@@ -136,14 +136,126 @@ class Graph:
             result += ", ".join(connections) + "\n"
         return result
 
-    def dijkstra_list_apq(self, src: Vertex, dest: Vertex, print_result=False):
+    def dijkstra_simple_non_adaptable_pq(
+        self, src: Vertex, dest: Vertex, print_result=False, early_stop=True
+    ):
+        dist = {v: float("inf") for v in self.graph}
+        dist[src] = 0
+        prev = {v: None for v in self.graph}  # used to reconstruct the path
+
+        pq = SimplePQ()
+
+        for v in self.graph:
+            priority = 0 if v == src else float("inf")
+            dist[v] = priority
+            prev[v] = None
+            pq.add(v, priority)
+
+        while len(pq) > 0:
+            u, u_dist = pq.pop()
+
+            if early_stop and u == dest:
+                break
+
+            for e in self.get_edges(u):
+                v = e.opposite(u)
+                weight = e.element()
+                alt_dist = u_dist + weight
+
+                if alt_dist < dist[v]:
+                    dist[v] = alt_dist
+                    prev[v] = u
+                    # instead of updating the priority just add a new item. The smaller priority will always be first
+                    pq.add(v, alt_dist)
+
+        path = []
+        current = dest
+
+        if prev[dest] is None and dest != src:
+            return [], float("inf")
+
+        while current is not None:
+            path.append(current)
+            current = prev[current]
+
+        path.reverse()
+
+        if print_result:  # TODO: Maybe move this out ?
+            print("\n=== DIJKSTRA RESULT ===")
+            print(
+                f"Shortest path from {src.element()} to {dest.element()}: {' -> '.join([v.element() for v in path])}"
+            )
+            print(f"Total distance: {dist[dest]}")
+
+            print("\nDetailed path:")
+            for i in range(len(path) - 1):
+                edge = self.get_edge(path[i], path[i + 1])
+                print(
+                    f"{path[i].element()} to {path[i + 1].element()} (weight: {edge.element()})"
+                )
+            print("=== END RESULT ===\n")
+
+        return path, dist[dest]
+
+    def dijkstra_list_apq(
+        self, src: Vertex, dest: Vertex, print_result=False, early_stop=True
+    ):
         dist = {v: float("inf") for v in self.graph}
         dist[src] = 0
         prev = {v: None for v in self.graph}  # used to reconstruct the path
 
         pq = AdaptablePQUnsortedList()
 
-        pass
+        for v in self.graph:
+            priority = 0 if v == src else float("inf")
+            dist[v] = priority
+            prev[v] = None
+            pq.add(v, priority)
+
+        while len(pq) > 0:
+            u, u_dist = pq.pop()
+
+            if early_stop and u == dest:
+                break
+
+            for e in self.get_edges(u):
+                v = e.opposite(u)
+                weight = e.element()
+                alt_dist = u_dist + weight
+
+                if alt_dist < dist[v]:
+                    dist[v] = alt_dist
+                    prev[v] = u
+                    pq.update_priority(v, alt_dist)
+
+        path = []
+        current = dest
+
+        if prev[dest] is None and dest != src:
+            return [], float("inf")
+
+        while current is not None:
+            path.append(current)
+            current = prev[current]
+
+        path.reverse()
+
+        if print_result:  # TODO: Maybe move this out ?
+            print("\n=== DIJKSTRA RESULT ===")
+            print(
+                f"Shortest path from {src.element()} to {dest.element()}: {' -> '.join([v.element() for v in path])}"
+            )
+            print(f"Total distance: {dist[dest]}")
+
+            print("\nDetailed path:")
+            for i in range(len(path) - 1):
+                edge = self.get_edge(path[i], path[i + 1])
+                print(
+                    f"{path[i].element()} to {path[i + 1].element()} (weight: {edge.element()})"
+                )
+            print("=== END RESULT ===\n")
+
+        return path, dist[dest]
 
     def dijkstra(
         self, src: Vertex, dest: Vertex, print_result=False, early_stop=True

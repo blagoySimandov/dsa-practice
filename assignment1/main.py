@@ -104,7 +104,6 @@ def benchmark_dijkstra_q4():
         logger.info(f"Speedup: {all_nodes_avg / early_stop_avg:.2f}x")
         logger.info("-" * 40)
 
-    # Use the prettyplots module for visualization
     plot_dijkstra_comparison(
         distances=distances,
         early_stop_times=early_stop_times,
