@@ -1,6 +1,9 @@
 # Data Structures and Algorithms II - Assignment 1
 
-This project evaluates different variants of Dijkstra's algorithm for finding the shortest path in undirected weighted graphs.
+This project evaluates different variants of Dijkstra's algorithm for finding
+the shortest path in undirected weighted graphs.
+
+Report doc: [REPORT](REPORT.md)
 
 ## Requirements
 
@@ -22,7 +25,8 @@ pip install -r requirements.txt
     Adaptable - Unsorted List, Non-adaptable - Simple PQ heap impl)
   - `graph.py` - Graph implementation and Dijkstra's algorithm variants
 - `prettyplots/` - Plotting utilities
-- `dijkstra_implementation_tests/` - Tests for the implemented Dijkstra's algorithm
+- `dijkstra_implementation_tests/` - Tests for the implemented Dijkstra's
+  algorithm
 - `main.py` - Benchmarking and evaluation code
 
 ### Run Tests
@@ -48,4 +52,3 @@ make all_evaluations  # run all evaluations
 ```bash
 make clean #removes the generated images of plots
 ```
-
