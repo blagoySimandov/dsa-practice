@@ -26,4 +26,4 @@ q6:
 all_evaluations: q3 q4 q5 q6
 
 clean:
-	rm -f *.png
+	rm -f figs/*.png
